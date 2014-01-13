@@ -15,6 +15,7 @@
  * See: http://www.opensource.org/licenses/bsd-license.php
  */
 (function($) {
+    console.log('hijacked inlines');
 	$.fn.formset = function(opts) {
 		var options = $.extend({}, $.fn.formset.defaults, opts);
 		var $this = $(this);
@@ -141,7 +142,7 @@
 	// Stacked inlines ---------------------------------------------------------
 	$.fn.stackedFormset = function(options) {
 		var $rows = $(this);
-
+        
 		var update_inline_labels = function(formset_to_update) {
 			formset_to_update.children('.inline-related').not('.empty-form').children('h3').find('.inline_label').each(function(i) {
 				var count = i + 1;
@@ -219,11 +220,28 @@
 		
 		//all nested inlines
 		var nested_inlines = search_space.find("." + sourceParentPrefix + "-nested-inline");
-		nested_inlines.each(function(index) {
-			// prefixes for the nested formset
+		var class_names = [];
+        nested_inlines.each(function(index) {
+            
+            // Only use one of each type of formset. 
+		    if(class_names.indexOf($(this).attr('class')) >= 0){
+                return false;
+            } else {
+                class_names.push($(this).attr('class'));
+            }
+            
+            // prefixes for the nested formset
 			var normalized_formset_prefix = $(this).attr('id').split('-group')[0];
 			// = "parent_formset_prefix"-0-"nested_inline_name"_set
-			var formset_prefix = normalized_formset_prefix.replace(sourceParentPrefix + "-0", row_prefix);
+            
+			// Find the next parent formset's index. 
+            var i = 1;
+            while($('#' + $(this).attr('id').replace(/\-\d/, '-' + i)).length && i < 100){
+                i++;
+            }
+            var formset_prefix = normalized_formset_prefix.replace(/\-\d/, '-' + i);
+            
+			//var formset_prefix = normalized_formset_prefix.replace(sourceParentPrefix + "-0", row_prefix);
 			// = "parent_formset_prefix"-"next_form_id"-"nested_inline_name"_set
 			// Find the normalized formset and clone it
 			var template = $(this).clone();
@@ -232,7 +250,7 @@
 			var options = $(this).data('django_formset');
 			//clone, so that we don't modify the old one
 			options = $.extend({}, options);
-			options.prefix = formset_prefix;
+            options.prefix = formset_prefix;
 			
 			var isTabular = template.find('#'+normalized_formset_prefix+'-empty').is('tr');
 			
@@ -245,14 +263,14 @@
 				//stacked cleanup
 				template.find(".inline-related").not(".empty-form").remove();
 			}
-			//remove other unnecessary things
-			template.find('.'+options.addCssClass).remove();
+			//remove add button
+            template.find('.'+options.addCssClass).remove();
 			
 			//replace the cloned prefix with the new one
 			update_props(template, normalized_formset_prefix, formset_prefix);
 			//reset update formset management variables
-			template.find('#id_' + formset_prefix + '-INITIAL_FORMS').val(0);
-			template.find('#id_' + formset_prefix + '-TOTAL_FORMS').val(1);
+			template.find('#' + formset_prefix + '-INITIAL_FORMS').val(0);
+			template.find('#' + formset_prefix + '-TOTAL_FORMS').val(1);
 			//remove the fk and id values, because these don't exist yet
 			template.find('.original').empty();
 			
@@ -267,7 +285,6 @@
 				row.after(wrapped);
 			} else {
 				var formset = template.find(".inline-related").stackedFormset(options);
-				
 				row.after(template);
 			}
 			
@@ -331,7 +348,7 @@
 		
 		var row = insertNewRow(options.prefix, options);
 
-		updateAddButton(options.prefix);
+		updateAddButton(options);
 
 		// Add delete button handler
 		row.find("a." + options.deleteCssClass).click(function(e) {
@@ -420,6 +437,7 @@
 	/** show or hide the addButton **/
 	function updateAddButton(options) {
 		// Hide add button in case we've hit the max, except we want to add infinitely
+        return;
 		var btn = $("#" + options.prefix + "-empty").parent().children('.'+options.addCssClass);
 		if (isAddButtonVisible(options)) {
 			btn.hide();
