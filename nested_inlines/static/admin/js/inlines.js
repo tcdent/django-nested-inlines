@@ -235,7 +235,7 @@
 			// = "parent_formset_prefix"-0-"nested_inline_name"_set
             
 			// Find the next parent formset's index. 
-            var i = 1;
+            var i = 0;
             while($('#' + $(this).attr('id').replace(/\-\d/, '-' + i)).length && i < 100){
                 i++;
             }
