@@ -240,7 +240,6 @@
                 i++;
             }
             var formset_prefix = normalized_formset_prefix.replace(/\-\d/, '-' + i);
-            
 			//var formset_prefix = normalized_formset_prefix.replace(sourceParentPrefix + "-0", row_prefix);
 			// = "parent_formset_prefix"-"next_form_id"-"nested_inline_name"_set
 			// Find the normalized formset and clone it
@@ -270,7 +269,10 @@
 			update_props(template, normalized_formset_prefix, formset_prefix);
 			//reset update formset management variables
 			template.find('#' + formset_prefix + '-INITIAL_FORMS').val(0);
-			template.find('#' + formset_prefix + '-TOTAL_FORMS').val(1);
+            console.log('#' + formset_prefix + '-TOTAL_FORMS');
+			console.log(template.find('#' + formset_prefix + '-TOTAL_FORMS'));
+            template.find('#' + formset_prefix + '-TOTAL_FORMS').val(1);
+
 			//remove the fk and id values, because these don't exist yet
 			template.find('.original').empty();
 			
@@ -400,6 +402,7 @@
 	
 	function prepareRowTemplate(template, prefix, index, options) {
 		var row = template.clone(true);
+        
 		row.removeClass(options.emptyCssClass).addClass(options.formCssClass).attr("id", prefix + "-" + index);
 		if (row.is("tr")) {
 			// If the forms are laid out in table rows, insert
