@@ -240,6 +240,11 @@
                 i++;
             }
             var formset_prefix = normalized_formset_prefix.replace(/\-\d/, '-' + i);
+            
+            // Skip adding formset to a newly-added parent inline; we can't save it successfully anyway. 
+            if(!$('#id_' + formset_prefix + '-id').val())
+                return;
+            
 			//var formset_prefix = normalized_formset_prefix.replace(sourceParentPrefix + "-0", row_prefix);
 			// = "parent_formset_prefix"-"next_form_id"-"nested_inline_name"_set
 			// Find the normalized formset and clone it
