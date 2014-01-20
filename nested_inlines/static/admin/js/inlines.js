@@ -251,7 +251,7 @@
 			options = $.extend({}, options);
             options.prefix = formset_prefix;
 			
-			var isTabular = template.find('#'+normalized_formset_prefix+'-empty').is('tr');
+			var isTabular = template.find('#id_'+normalized_formset_prefix+'-empty').is('tr');
 			
 			//remove all existing rows from the clone
 			if (isTabular) {
@@ -268,10 +268,8 @@
 			//replace the cloned prefix with the new one
 			update_props(template, normalized_formset_prefix, formset_prefix);
 			//reset update formset management variables
-			template.find('#' + formset_prefix + '-INITIAL_FORMS').val(0);
-            console.log('#' + formset_prefix + '-TOTAL_FORMS');
-			console.log(template.find('#' + formset_prefix + '-TOTAL_FORMS'));
-            template.find('#' + formset_prefix + '-TOTAL_FORMS').val(1);
+			template.find('#id_' + formset_prefix + '-INITIAL_FORMS').val(0);
+            template.find('#id_' + formset_prefix + '-TOTAL_FORMS').val(1);
 
 			//remove the fk and id values, because these don't exist yet
 			template.find('.original').empty();
